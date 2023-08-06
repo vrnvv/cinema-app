@@ -9,6 +9,8 @@ import cinema.model.Movie;
 import cinema.service.MovieService;
 import cinema.service.mapper.RequestDtoMapper;
 import cinema.service.mapper.ResponseDtoMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/movies")
 public class MovieController {
+    private final Logger logger = LoggerFactory.getLogger(MovieController.class);
     private final MovieService movieService;
     private final RequestDtoMapper<MovieRequestDto, Movie> movieRequestDtoMapper;
     private final ResponseDtoMapper<MovieResponseDto, Movie> movieResponseDtoMapper;
@@ -38,9 +41,14 @@ public class MovieController {
 
     @GetMapping
     public List<MovieResponseDto> getAll() {
-        return movieService.getAll()
+        logger.info("Fetching all movies...");
+        List<MovieResponseDto> movieResponseDto = movieService.getAll()
                 .stream()
                 .map(movieResponseDtoMapper::mapToDto)
                 .toList();
+
+        logger.info("Fetched {} movies.", movieResponseDto.size());
+
+        return movieResponseDto;
     }
 }
